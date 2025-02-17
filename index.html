@@ -4,56 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attendance Tracker</title>
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyBAEOEfsCqcXA3zEfiBdvgP94rq4KsYY2Y",
-    authDomain: "attendence-e478b.firebaseapp.com",
-    projectId: "attendence-e478b",
-    storageBucket: "attendence-e478b.firebasestorage.app",
-    messagingSenderId: "176019310941",
-    appId: "1:176019310941:web:efbf7e13d8caf8a48480b4",
-    measurementId: "G-B8QRSRZKS6"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-    </script>
-        <script>
-        window.markAttendance = async function(candidate) {
-            let today = new Date().toISOString().split('T')[0];
-            let docRef = doc(db, "attendance", today);
-            let docSnap = await getDoc(docRef);
-            
-            if (!docSnap.exists()) {
-                await setDoc(docRef, { candidate: candidate });
-                loadAttendance();
-            } else {
-                alert('Attendance for today is already recorded!');
-            }
-        };
-        
-        async function loadAttendance() {
-            let tableBody = document.getElementById('attendanceTable');
-            tableBody.innerHTML = '';
-            let querySnapshot = await getDocs(collection(db, "attendance"));
-            
-            querySnapshot.forEach((doc) => {
-                let row = `<tr><td>${doc.id}</td><td>${doc.data().candidate}</td></tr>`;
-                tableBody.innerHTML += row;
-            });
-        }
-        
-        window.onload = loadAttendance;
-    </script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
         button { margin: 10px; padding: 10px 20px; font-size: 16px; }
@@ -63,7 +13,7 @@
 </head>
 <body>
     <h2>Attendance Tracker</h2>
-    <p>Click on the candidate who arrives first today.</p>
+    <p>JE PAHILE UTHEL TYNE HE DABAVE.</p>
     <button onclick="markAttendance('Krishna')">Krishna</button>
     <button onclick="markAttendance('Kavya')">Kavya</button>
     <h3>Attendance Records</h3>
@@ -76,5 +26,29 @@
         </thead>
         <tbody id="attendanceTable"></tbody>
     </table>
+    <script>
+        function markAttendance(candidate) {
+            let today = new Date().toISOString().split('T')[0];
+            let records = JSON.parse(localStorage.getItem('attendance')) || {};
+            if (!records[today]) {
+                records[today] = candidate;
+                localStorage.setItem('attendance', JSON.stringify(records));
+                loadAttendance();
+            } else {
+                alert('Attendance for today is already recorded!');
+            }
+        }
+        
+        function loadAttendance() {
+            let records = JSON.parse(localStorage.getItem('attendance')) || {};
+            let tableBody = document.getElementById('attendanceTable');
+            tableBody.innerHTML = '';
+            for (let date in records) {
+                let row = `<tr><td>${date}</td><td>${records[date]}</td></tr>`;
+                tableBody.innerHTML += row;
+            }
+        }
+        loadAttendance();
+    </script>
 </body>
 </html>
