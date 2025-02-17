@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Tracker</title>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqQQQW8DJnpcd9XwjhAyKy1pVz_MYNziE",
+    authDomain: "attend-fd29f.firebaseapp.com",
+    projectId: "attend-fd29f",
+    storageBucket: "attend-fd29f.firebasestorage.app",
+    messagingSenderId: "730043750198",
+    appId: "1:730043750198:web:95992dde0e1d2fb5248597",
+    measurementId: "G-XZY48J13HL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Function to mark attendance
+        window.markAttendance = async function(candidate) {
+            let today = new Date().toISOString().split('T')[0];
+            let docRef = doc(db, "attendance", today);
+            let docSnap = await getDoc(docRef);
+            
+            if (!docSnap.exists()) {
+                await setDoc(docRef, { candidate: candidate });
+                loadAttendance();
+            } else {
+                alert('Attendance for today is already recorded!');
+            }
+        };
+
+        // Function to load attendance
+        async function loadAttendance() {
+            let tableBody = document.getElementById('attendanceTable');
+            tableBody.innerHTML = '';
+            let querySnapshot = await getDocs(collection(db, "attendance"));
+            
+            querySnapshot.forEach((doc) => {
+                let row = `<tr><td>${doc.id}</td><td>${doc.data().candidate}</td></tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        window.onload = loadAttendance;
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+        table { margin: 20px auto; border-collapse: collapse; width: 50%; }
+        th, td { border: 1px solid black; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Attendance Tracker</h2>
+    <p>Click on the candidate who arrives first today.</p>
+    <button onclick="markAttendance('Krishna')">Krishna</button>
+    <button onclick="markAttendance('Kavya')">Kavya</button>
+    <h3>Attendance Records</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>First Arrived</th>
+            </tr>
+        </thead>
+        <tbody id="attendanceTable"></tbody>
+    </table>
+</body>
+</html>
