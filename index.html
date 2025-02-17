@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Tracker</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+        table { margin: 20px auto; border-collapse: collapse; width: 50%; }
+        th, td { border: 1px solid black; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Attendance Tracker</h2>
+    <p>JE PAHILE UTHEL TYNE HE DABAVE.</p>
+    <button onclick="markAttendance('Krishna')">Krishna</button>
+    <button onclick="markAttendance('Kavya')">Kavya</button>
+    <h3>Attendance Records</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>First Arrived</th>
+            </tr>
+        </thead>
+        <tbody id="attendanceTable"></tbody>
+    </table>
+    <script>
+        function markAttendance(candidate) {
+            let today = new Date().toISOString().split('T')[0];
+            let records = JSON.parse(localStorage.getItem('attendance')) || {};
+            if (!records[today]) {
+                records[today] = candidate;
+                localStorage.setItem('attendance', JSON.stringify(records));
+                loadAttendance();
+            } else {
+                alert('Attendance for today is already recorded!');
+            }
+        }
+        
+        function loadAttendance() {
+            let records = JSON.parse(localStorage.getItem('attendance')) || {};
+            let tableBody = document.getElementById('attendanceTable');
+            tableBody.innerHTML = '';
+            for (let date in records) {
+                let row = `<tr><td>${date}</td><td>${records[date]}</td></tr>`;
+                tableBody.innerHTML += row;
+            }
+        }
+        loadAttendance();
+    </script>
+</body>
+</html>
